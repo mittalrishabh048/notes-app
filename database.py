@@ -20,4 +20,35 @@ def initialize_db():
     connection.commit()
     connection.close()
 
-initialize_db()
+def add_note(title, content):
+    connection = sqlite3.connect("notes.db")
+    cursor = connection.cursor()
+    # Using '?' placeholders for security
+    cursor.execute("INSERT INTO notes (title, content) VALUES (?, ?)", (title, content))
+    connection.commit()
+    connection.close()
+
+def get_all_notes():
+    connection = sqlite3.connect("notes.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM notes")
+    notes = cursor.fetchall()  # This grabs our list of tuples
+    connection.close()
+    return notes
+
+
+'''
+--- TEMPORARY TEST CODE ---
+if __name__ == "__main__":
+    # 1. Make sure the table is initialized
+    initialize_db()
+    
+    # 2. Add a test note
+    print("Adding a test note...")
+    add_note("Test Title", "This is a test note content!")
+    
+    # 3. Retrieve all notes and print them
+    print("Retrieving all notes:")
+    all_notes = get_all_notes()
+    print(all_notes)
+'''
