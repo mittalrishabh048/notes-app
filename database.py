@@ -1,5 +1,22 @@
 import sqlite3
 
+
+def update_note(note_id, title, content):
+    connection = sqlite3.connect("notes.db")
+    cursor = connection.cursor()
+    # Update the columns only for the matching unique ID
+    cursor.execute("UPDATE notes SET title = ?, content = ? WHERE id = ?", (title, content, note_id))
+    connection.commit()
+    connection.close()
+
+def delete_note(note_id):
+    connection = sqlite3.connect("notes.db")
+    cursor = connection.cursor()
+    # Permanently delete the row matching the unique ID
+    cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+    connection.commit()
+    connection.close()
+
 def initialize_db():
     # 1. Connect to the database file (it creates it if it doesn't exist)
     connection = sqlite3.connect("notes.db")
