@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from database import add_note,get_all_notes,update_note,delete_note
+from database import add_note,get_all_notes,update_note,delete_note,search_notes_by_title
 
 current_notes_data = []
 selected_note_id = None
@@ -47,15 +47,21 @@ def delete_note_action():
         load_notes_list()
         messagebox.showinfo("Deleted", "Note removed successfully!")
 
-def load_notes_list():
+def load_notes_list(event=None):
     global current_notes_data
-    # 1. Clear the listbox so we start fresh
+    
     notes_listbox.delete(0, tk.END)
+
+    # Grab whatever text is inside our search bar
+    search_term = search_entry.get().strip()
     
-    # 2. Fetch the list of tuples from the database
-    current_notes_data = get_all_notes()
+    # Conditional Check: If search bar has text, use search query; otherwise, grab everything
+    if search_term == "":
+        current_notes_data = get_all_notes()
+    else:
+        current_notes_data = search_notes_by_title(search_term)
     
-    # 3. Loop through the notes and insert the title and content into the sidebar
+    # Loop through the notes and insert the title and content into the sidebar
     for note in current_notes_data:
         # Remember: Each note tuple looks like: (id, title, content)
         notes_listbox.insert(tk.END, note[1])
@@ -99,6 +105,16 @@ sidebar.pack_propagate(False)  # Prevents the frame from shrinking to fit its co
 # Sidebar Title
 sidebar_label = tk.Label(sidebar, text="My Notes", font=("Helvetica", 14, "bold"), bg="#f0f0f0")
 sidebar_label.pack(pady=10)
+
+# Search Entry Box
+search_label = tk.Label(sidebar, text="Search by Title:", font=("Helvetica", 10), bg="#f0f0f0")
+search_label.pack(anchor=tk.W, padx=10, pady=(5, 0))
+
+search_entry = tk.Entry(sidebar, font=("Helvetica", 11), bd=1, relief=tk.SOLID)
+search_entry.pack(fill=tk.X, padx=10, pady=(0, 5))
+
+# Bind the real-time key release event directly to our loading function!
+search_entry.bind("<KeyRelease>", load_notes_list)
 
 # Listbox to display note titles
 notes_listbox = tk.Listbox(sidebar, font=("Helvetica", 12))

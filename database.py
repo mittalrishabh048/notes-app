@@ -53,6 +53,15 @@ def get_all_notes():
     connection.close()
     return notes
 
+def search_notes_by_title(search_query):
+    connection = sqlite3.connect("notes.db")
+    cursor = connection.cursor()
+    # Wrapping our search term in wildcard characters securely
+    formatted_query = f"%{search_query}%"
+    cursor.execute("SELECT * FROM notes WHERE title LIKE ?", (formatted_query,))
+    results = cursor.fetchall()
+    connection.close()
+    return results
 
 '''
 --- TEMPORARY TEST CODE ---
